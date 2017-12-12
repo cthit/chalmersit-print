@@ -12,20 +12,21 @@ class Print
   end
 
   validates :copies, numericality: { only_integer: true }
-  validates :sides, inclusion: { in: %w(two-sided-long-edge one-sided) }
   validates :ranges, format:  { with: /[0-9\-, ]+/, allow_blank: true }
-  validate  :media_in_printer
+  validate  :media_in_printer, if: -> { media.present? }
   validate  :file_is_valid
-  validates :ppi, inclusion: { in: Print.available_ppi }
+  validates :ppi, inclusion: { in: Print.available_ppi }, allow_blank: true
   validates :username, :password, :printer, :file, presence: true
 
-  attr_accessor :copies, :sides, :collate, :ranges, :media, :username, :password, :ppi, :file, :file_cache, :file_name, :printer
-
+  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :file_cache, :file_name, :printer
 
   def initialize(attributes = {})
     attributes.each do |name, value|
       send "#{name}=", value
     end
+
+    self.copies ||= 1
+    self.duplex ||= true
   end
 
   def options
@@ -33,11 +34,11 @@ class Print
   end
 
   def sides
-    @sides ? "two-sided-long-edge" : "one-sided"
+    @duplex ? "two-sided-long-edge" : "one-sided"
   end
 
-  def sides=(sides_param)
-    @sides = (sides_param == true || sides_param == '1')
+  def duplex=(sides_param)
+    @duplex = (sides_param == true || sides_param == '1')
   end
 
   def collate
@@ -82,6 +83,6 @@ class Print
     end
 
     def mime_type(file)
-      `file --mime-type -b '#{File.absolute_path(file)}'`.chomp
+      `/usr/bin/file --mime-type -b '#{File.absolute_path(file)}'`.chomp
     end
 end

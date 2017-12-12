@@ -1,11 +1,6 @@
 class PrintController < ApplicationController
   include PrinterConnection
 
-  def new
-    @print = Print.new(copies: 1)
-    @printers = Printer.available.weighted
-  end
-
   def create
     @print = Print.new(print_params)
 
@@ -21,29 +16,24 @@ class PrintController < ApplicationController
     @print.printer = Printer.find_by!(name: print_params[:printer])
 
     if @print.valid?
-      begin
-        print_script @print
-        @print.printer.increment!(:weight)
-        @print.file_cache = nil
-        flash.now[:notice] = "Your document has been sent to the printer"
-      rescue => e
-        # Log error message to log/printer.log
-        @print.print_logger e.message
-        flash.now[:alert] = e.message
-      end
-    elsif @print.errors[:file].any?
-      @print.file = nil
-      @print.file_cache = nil
+      print_script @print
+      @print.printer.increment!(:weight)
+      render json: { success: true }
+    else
+      render json: { errors: @print.errors }, status: :bad_request
     end
-    render :new
   end
 
   def pq
     render json: print_pq(params[:username], params[:password])
   end
 
+  def list_printers
+    render json: Printer.available.weighted
+  end
+
   private
     def print_params
-      params.require(:print).permit(:username, :password, :copies, :printer, :file, :file_cache, :file_name, :sides, :collate, :ranges, :media, :ppi)
+      params.require(:print).permit(:username, :password, :copies, :printer, :file, :file_cache, :file_name, :duplex, :collate, :ranges, :media, :ppi)
     end
 end
