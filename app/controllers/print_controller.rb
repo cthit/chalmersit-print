@@ -34,6 +34,6 @@ class PrintController < ApplicationController
 
   private
     def print_params
-      params.require(:print).permit(:username, :password, :copies, :printer, :file, :file_cache, :file_name, :duplex, :collate, :ranges, :media, :ppi)
+      params.require(:print).permit(:username, :password, :copies, :printer, :file, :file_cache, :file_name, :duplex, :collate, :ranges, :media, :ppi, :grayscale)
     end
 end

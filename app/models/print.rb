@@ -18,7 +18,7 @@ class Print
   validates :ppi, inclusion: { in: Print.available_ppi }, allow_blank: true
   validates :username, :password, :printer, :file, presence: true
 
-  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :file_cache, :file_name, :printer
+  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :file_cache, :file_name, :printer, :grayscale
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -27,10 +27,15 @@ class Print
 
     self.copies ||= 1
     self.duplex ||= true
+    self.grayscale ||= false
   end
 
   def options
     [:collate, :sides, :page_ranges, :ppi, :media].reject{ |o| (send o).blank? }.map{ |opt| "-o #{opt.to_s.dasherize}\='#{send opt}'" }.join " "
+  end
+
+  def grayscale
+    @grayscale ? "-o 'ColorModel=Gray' -o 'ColorMode=False'" : ""
   end
 
   def sides
@@ -60,7 +65,7 @@ class Print
   end
 
   def to_s
-    "/usr/bin/lpr -P '#{printer.name}' -\# #{copies} #{options}"
+    "/usr/bin/lpr -P '#{printer.name}' -\# #{copies} #{grayscale} #{options}"
   end
 
   def print_logger(err)
