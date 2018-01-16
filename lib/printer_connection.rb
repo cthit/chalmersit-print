@@ -2,7 +2,7 @@ require 'net/http'
 require 'net/ssh'
 
 module PrinterConnection
-  DOMAINS = ['remote11.chalmers.se', 'remote12.chalmers.se']
+  DOMAINS = ['remote11.chalmers.se']
   SSH_FILENAME = '.print/chalmersit.dat'
 
   PQ_SITE = 'https://print.chalmers.se/auth/fs.pl'
@@ -15,7 +15,7 @@ module PrinterConnection
       output = connect(print, d)
       break if output.empty?
     end
-    raise output unless output.empty?
+    raise PrintError.new(output) unless output.empty?
   end
 
   def connect(print, domain)
@@ -25,6 +25,15 @@ module PrinterConnection
       ssh.scp.upload!(print.file.path, SSH_FILENAME)
       ssh.exec! print_string(print)
     end
+  end
+
+  def krb_valid?(username, password)
+    krb5 = Kerberos::Krb5.new
+    krb5.get_init_creds_password "#{username}@CHALMERS.SE", password
+    krb5.close
+    true
+  rescue
+    false
   end
 
   def print_string(print)
@@ -43,5 +52,8 @@ module PrinterConnection
     doc = Nokogiri::HTML(res.body)
     b = doc.xpath(XPATH).last
     { value: b.inner_text.squish, username: user }
+  end
+
+  class PrintError < StandardError
   end
 end

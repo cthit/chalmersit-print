@@ -18,7 +18,7 @@ class Print
   validates :ppi, inclusion: { in: Print.available_ppi }, allow_blank: true
   validates :username, :password, :printer, :file, presence: true
 
-  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :file_cache, :file_name, :printer, :grayscale
+  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :printer, :grayscale
 
   def initialize(attributes = {})
     attributes.each do |name, value|

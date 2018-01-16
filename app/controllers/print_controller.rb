@@ -3,17 +3,12 @@ class PrintController < ApplicationController
 
   def create
     @print = Print.new(print_params)
-
-    # Solution for caching the uploaded file
-    # Saved in file_cache and then sent to the client
-    if @print.file.present?
-      @print.file_name = @print.file.original_filename
-      @print.file_cache = @print.file.tempfile.path
-    end
-
-    @print.file = File.new(@print.file_cache) if @print.file_cache
-
     @print.printer = Printer.find_by!(name: print_params[:printer])
+    @print.file = File.new(@print.file.tempfile.path)
+
+    unless krb_valid?(@print.username, @print.password)
+      return render json: { errors: ["Bad username or password"] }, status: :forbidden
+    end
 
     if @print.valid?
       print_script @print
@@ -22,6 +17,8 @@ class PrintController < ApplicationController
     else
       render json: { errors: @print.errors }, status: :bad_request
     end
+  rescue PrintError => e
+    render json: { errors: [e] }, status: :bad_request
   end
 
   def pq
@@ -34,6 +31,6 @@ class PrintController < ApplicationController
 
   private
     def print_params
-      params.require(:print).permit(:username, :password, :copies, :printer, :file, :file_cache, :file_name, :duplex, :collate, :ranges, :media, :ppi, :grayscale)
+      params.require(:print).permit(:username, :password, :copies, :printer, :file, :duplex, :collate, :ranges, :media, :ppi, :grayscale)
     end
 end

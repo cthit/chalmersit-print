@@ -20,6 +20,10 @@ gem 'puma', '~> 3.7'
 # For html parsing
 gem 'nokogiri'
 
+gem 'rkerberos'
+
+gem 'net-ssh-krb'
+
 gem 'net-scp'
 
 # Use Capistrano for deployment
