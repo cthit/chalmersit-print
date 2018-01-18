@@ -14,9 +14,9 @@ class Print
   validates :copies, numericality: { only_integer: true }
   validates :ranges, format:  { with: /[0-9\-, ]+/, allow_blank: true }
   validate  :media_in_printer, if: -> { media.present? }
-  validate  :file_is_valid
   validates :ppi, inclusion: { in: Print.available_ppi }, allow_blank: true
   validates :username, :password, :printer, :file, presence: true
+  validate  :file_is_valid, if: :file
 
   attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :printer, :grayscale
 
@@ -79,8 +79,8 @@ class Print
     end
 
     def file_is_valid
+      errors.add(:file) unless File.file?(file)
       errors.add(:file, :invalid_type) unless Print.permitted_mime_types.include? mime_type(file)
-      errors.add_on_blank(:file) if file.nil? || !File.file?(file)
 
       unless File.absolute_path(file).start_with?('/tmp') || file.is_a?(Tempfile)
         errors.add(:file, :invalid)
