@@ -19,6 +19,12 @@ RUN useradd ruby
 RUN chown -R ruby /app
 USER ruby
 
+# Database defaults
+ENV DATABASE_NAME print_production
+ENV DATABASE_HOST database
+ENV DATABASE_USER root
+ENV DATABASE_PASSWORD password
+
 # Start server
 ENV RAILS_ENV production
 ENV RACK_ENV production
