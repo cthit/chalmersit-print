@@ -31,6 +31,5 @@ ENV RACK_ENV production
 ENV SECRET_KEY_BASE secret
 ENV PORT 3000
 EXPOSE 3000
-RUN ["rails", "db:setup"]
-RUN ["rails", "cthit:update_printers"]
-CMD ["rails", "s", "-b", "0.0.0.0"]
+
+CMD ["sh", "start.sh"]
