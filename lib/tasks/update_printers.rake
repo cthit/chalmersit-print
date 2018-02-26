@@ -4,7 +4,7 @@ require 'net/http'
 def get_all_csv
   uri = URI 'https://print.chalmers.se/public/pls.cgi'
   res = Net::HTTP.post_form(uri, 'textver' => 'CSV export')
-  xml = Nokogiri::XML(res.body)
+  xml = Nokogiri::XML(res.body, nil, 'utf-8')
   text = xml.css('pre').children.text.strip
   csv = CSV.parse(text, {
     col_sep: "\t",
