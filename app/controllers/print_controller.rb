@@ -26,7 +26,7 @@ class PrintController < ApplicationController
   end
 
   def list_printers
-    render json: Printer.available.weighted
+    @printers = Printer.available.weighted
   end
 
   private
