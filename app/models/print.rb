@@ -21,13 +21,13 @@ class Print
   attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :printer, :grayscale
 
   def initialize(attributes = {})
+    self.copies = 1
+    self.duplex = true
+    self.grayscale = false
+
     attributes.each do |name, value|
       send "#{name}=", value
     end
-
-    self.copies ||= 1
-    self.duplex ||= true
-    self.grayscale ||= false
   end
 
   def options

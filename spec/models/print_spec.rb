@@ -10,11 +10,13 @@ describe Print do
   it 'should print with duplex' do
     print = build(:print)
     expect(print.to_s).to include(" -o sides='two-sided-long-edge'")
+    expect(print.duplex).to be true
   end
 
   it 'should print with simplex' do
     print = build(:print, duplex: false)
     expect(print.to_s).to include(" -o sides='one-sided'")
+    expect(print.duplex).to be false
   end
 
   it 'should print with the correct number of copies' do
