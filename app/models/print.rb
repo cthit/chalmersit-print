@@ -34,6 +34,10 @@ class Print
     [:collate, :sides, :page_ranges, :ppi, :media].reject{ |o| (send o).blank? }.map{ |opt| "-o #{opt.to_s.dasherize}\='#{send opt}'" }.join " "
   end
 
+  def grayscale=(grayscale_param)
+    @grayscale = (grayscale_param == true || grayscale_param == '1')
+  end
+
   def grayscale
     @grayscale ? "-o 'ColorModel=Gray' -o 'ColorMode=False'" : ""
   end
