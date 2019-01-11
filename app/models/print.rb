@@ -18,7 +18,8 @@ class Print
   validates :username, :password, :printer, :file, presence: true
   validate  :file_is_valid, if: :file
 
-  attr_accessor :copies, :duplex, :collate, :ranges, :media, :username, :password, :ppi, :file, :printer, :grayscale
+  attr_accessor :copies, :duplex, :collate, :ranges, :media, :password, :ppi, :file, :printer, :grayscale
+  attr_reader :username
 
   def initialize(attributes = {})
     self.copies = 1
@@ -75,6 +76,10 @@ class Print
   def print_logger(err)
     @@print_logger ||= Logger.new(Rails.root.join('log', 'printer.log'))
     @@print_logger.error "#{err} USER: #{self.username} CMD: \"#{self.to_s}\""
+  end
+
+  def username=(name)
+    @username = name.downcase
   end
 
   private
