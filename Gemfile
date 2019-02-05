@@ -20,8 +20,6 @@ gem 'jbuilder'
 # For html parsing
 gem 'nokogiri'
 
-gem 'rkerberos'
-
 gem 'net-ssh-krb'
 
 gem 'net-scp'
