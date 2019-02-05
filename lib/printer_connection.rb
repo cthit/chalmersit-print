@@ -27,15 +27,6 @@ module PrinterConnection
     end
   end
 
-  def krb_valid?(username, password)
-    krb5 = Kerberos::Krb5.new
-    krb5.get_init_creds_password "#{username}@CHALMERS.SE", password
-    krb5.close
-    true
-  rescue
-    false
-  end
-
   def print_string(print)
     return "export CUPS_GSSSERVICENAME=HTTP; #{print} #{SSH_FILENAME}"
   end
