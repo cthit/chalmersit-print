@@ -5,7 +5,6 @@ class PrintController < ApplicationController
     @print = Print.new(print_params)
     @print.printer = Printer.find_by!(name: print_params[:printer])
     @print.file = File.new(@print.file.try(:tempfile).try(:path)) unless @print.file.nil?
-    end
 
     if @print.valid?
       print_script @print
