@@ -5,9 +5,6 @@ class PrintController < ApplicationController
     @print = Print.new(print_params)
     @print.printer = Printer.find_by!(name: print_params[:printer])
     @print.file = File.new(@print.file.try(:tempfile).try(:path)) unless @print.file.nil?
-
-    unless krb_valid?(@print.username, @print.password)
-      return render json: { errors: ["Bad username or password"] }, status: :forbidden
     end
 
     if @print.valid?
